@@ -1,20 +1,21 @@
 import pandas as pd
-import xlrd
+from XLSXhandler import XLSXhandler
 
-# read the xlsx file use pandas
-# TODO why isn't this function appearing as an attribute of the module when it's imported?
-# TODO doxygen documentation
-# * fname is name of the Excel file to read
-def ld_xlsx_pandas(fname) :
-    # check filename is not empty
-    if not fname:
-        print("filename empty")
-    else:
-        # my first try statmennt
-        try:
-            # load spreadsheet
-            xl_data = pd.ExcelFile(fname)
-            # print the sheetnames
-            print(xl_data.sheet_names)
-        except FileNotFoundError:
-            print("ERROR: file not found - {}".format(fname))
+# config
+# TODO read config from a JSON
+xlsx_fname = "Victory Buoys Fixtures 2018-2019.xlsx"
+team = 'Victory Buoys'
+
+xlsx = XLSXhandler(xlsx_fname)
+
+# Read the skittles Excel
+try:
+    # load spreadsheet
+    if xlsx.get_xlsx_from_file():
+        print(xlsx.get_sheet_names())
+        # TODO get Victory Buoys fixtures
+except FileNotFoundError:
+    print("ERROR: file not found - {}".format(fname))
+
+# TODO write (future) fixtures to Google calendar
+

@@ -21,6 +21,16 @@ class testSkittles(unittest.TestCase):
         # assert
         self.assertRaises(ValueError, skittles.get_fixtures, fname, team)
 
+    def test_get_fixtures_team_not_string(self):
+        """Test that get_fixtures throws a ValueError for a non-string team name"""
+        print("@test_get_fixtures_team_not_string")
+        # arrange
+        fname = "blank.xlsx"
+        team = 25
+        # act
+        # assert
+        self.assertRaises(ValueError, skittles.get_fixtures, fname, team)
+
 
 # run tests
 if __name__ == '__main__':

@@ -21,7 +21,11 @@ def get_fixtures(xlsx_fname, team):
     else:
         raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, xlsx_fname))
     # TODO team is a non-empty string
-    if not isinstance(team, str):
+    if isinstance(team, str):
+        # check whether string is empty or blank
+        if not (team and team.strip()):
+            raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(xlsx_fname, team, team))
+    else:
         raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, team))
     if xlsx.get_xlsx_from_file():
         print(xlsx.get_sheet_names())

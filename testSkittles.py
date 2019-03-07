@@ -51,6 +51,26 @@ class testSkittles(unittest.TestCase):
         # assert
         self.assertRaises(ValueError, skittles.get_fixtures, fname, team)
 
+    def test_get_fixtures_team_blank(self):
+        """check get_fixtures throws a ValueError for a blank team string"""
+        print("@test_get_fixtures_team_blank")
+        # arrange
+        fname = "blank.xlsx"
+        team = "   "
+        # act
+        # assert
+        self.assertRaises(ValueError, skittles.get_fixtures, fname, team)
+
+    def test_get_fixtures_team_empty(self):
+        """check get_fixtures throws a ValueError for an empty team string"""
+        print("@test_get_fixtures_team_empty")
+        # arrange
+        fname = "blank.xlsx"
+        team = ""
+        # act
+        # assert
+        self.assertRaises(ValueError, skittles.get_fixtures, fname, team)
+
 
 # run tests
 if __name__ == '__main__':

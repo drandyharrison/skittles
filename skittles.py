@@ -14,7 +14,11 @@ def get_fixtures(xlsx_fname, team):
     * team - the team whose fixtures are to be read (= worksheet name)"""
     # TODO validation
     # TODO xlsx_fname is a non-empty string with the suffix *.xlsx
-    if not isinstance(xlsx_fname, str):
+    if isinstance(xlsx_fname, str):
+        # check whether string is empty or blank
+        if not (xlsx_fname and xlsx_fname.strip()):
+            raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(xlsx_fname, team, xlsx_fname))
+    else:
         raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, xlsx_fname))
     # TODO team is a non-empty string
     if not isinstance(team, str):

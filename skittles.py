@@ -27,7 +27,8 @@ def get_fixtures(xlsx_fname, team):
     else:
         raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, team))
     if xlsx.get_xlsx_from_file():
-        print(xlsx.get_sheet_names())
+        teams_list = xlsx.get_sheet_names()
+        print(teams_list)
         # TODO check team is one of the sheet names
         # TODO get Victory Buoys fixtures
 
@@ -36,5 +37,5 @@ def get_fixtures(xlsx_fname, team):
 # ---------
 # Main body
 # ---------
-# call get_fixtures()
+get_fixtures(xlsx_fname, team)
 

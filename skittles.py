@@ -29,7 +29,8 @@ def get_fixtures(xlsx_fname, team):
     if xlsx.get_xlsx_from_file():
         teams_list = xlsx.get_sheet_names()
         print(teams_list)
-        # TODO check team is one of the sheet names
+        if team not in teams_list:
+            raise ValueError("@get_fixtures({}, {}) - team not in list {}".format(xlsx_fname, team, teams_list))
         # TODO get Victory Buoys fixtures
 
 # TODO write (future) fixtures to Google calendar

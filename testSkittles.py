@@ -71,6 +71,16 @@ class testSkittles(unittest.TestCase):
         # assert
         self.assertRaises(ValueError, skittles.get_fixtures, fname, team)
 
+    def test_get_fixtures_not_xlsx_suffix(self):
+        """check get_fixtures throws a ValueError for filename string that doesn't have an *.xlsx suffix"""
+        print("@test_get_fixtures_team_empty")
+        # arrange
+        fname = "blank.xls"
+        team = "blank"
+        # act
+        # assert
+        self.assertRaises(ValueError, skittles.get_fixtures, fname, team)
+
 
 # run tests
 if __name__ == '__main__':

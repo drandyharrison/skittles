@@ -12,15 +12,14 @@ def get_fixtures(xlsx_fname, team):
     """Read the skittles fixtures from Excel
     * xlsx_fname - name of the Excel file containing the fixture information
     * team - the team whose fixtures are to be read (= worksheet name)"""
-    # TODO validation
-    # TODO xlsx_fname is a non-empty string with the suffix *.xlsx
     if isinstance(xlsx_fname, str):
         # check whether string is empty or blank
         if not (xlsx_fname and xlsx_fname.strip()):
             raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(xlsx_fname, team, xlsx_fname))
+        elif not xlsx_fname.endswith(".xlsx"):
+            raise ValueError("@get_fixtures({}, {}) - {} has wrong suffix".format(xlsx_fname, team, xlsx_fname))
     else:
         raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, xlsx_fname))
-    # TODO team is a non-empty string
     if isinstance(team, str):
         # check whether string is empty or blank
         if not (team and team.strip()):
@@ -29,7 +28,13 @@ def get_fixtures(xlsx_fname, team):
         raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, team))
     if xlsx.get_xlsx_from_file():
         print(xlsx.get_sheet_names())
+        # TODO check team is one of the sheet names
         # TODO get Victory Buoys fixtures
 
 # TODO write (future) fixtures to Google calendar
+
+# ---------
+# Main body
+# ---------
+# call get_fixtures()
 

@@ -6,11 +6,20 @@ from XLSXhandler import XLSXhandler
 # team = 'Victory Buoys'
 
 # read config from a JSON
+# TODO create a generic JSON file reader
 jsondf = pandas.read_json("skittles_config.json")
 if jsondf.values.size < 2:
-    raise IndexError("Json file doesn't have enough parameters")
-xlsx_fname = jsondf.values[0][0]
-team = jsondf.values[1][0]
+    raise IndexError("JSON file doesn't have enough parameters")
+try:
+    xlsx_fname = jsondf['xlsx_fname'][0]
+except KeyError as e:
+    print("Key error: xlsx_fname")
+    exit(0)
+try:
+    team = jsondf['team'][0]
+except KeyError as e:
+    print("Key error: team")
+    exit(0)
 
 # get Excel file handler
 xlsx = XLSXhandler(xlsx_fname)

@@ -1,11 +1,18 @@
-import pandas as pd
+import pandas
 from XLSXhandler import XLSXhandler
 
-# config
-# TODO read config from a JSON
-xlsx_fname = "Victory Buoys Fixtures 2018-2019.xlsx"
-team = 'Victory Buoys'
+# config (deprecated)
+# xlsx_fname = "Victory Buoys Fixtures 2018-2019.xlsx"
+# team = 'Victory Buoys'
 
+# read config from a JSON
+jsondf = pandas.read_json("skittles_config.json")
+if jsondf.values.size < 2:
+    raise IndexError("Json file doesn't have enough parameters")
+xlsx_fname = jsondf.values[0][0]
+team = jsondf.values[1][0]
+
+# get Excel file handler
 xlsx = XLSXhandler(xlsx_fname)
 
 def get_fixtures(xlsx_fname, team):

@@ -1,28 +1,6 @@
 import pandas
 from XLSXhandler import XLSXhandler
-
-# config (deprecated)
-# xlsx_fname = "Victory Buoys Fixtures 2018-2019.xlsx"
-# team = 'Victory Buoys'
-
-# read config from a JSON
-# TODO create a generic JSON file reader
-jsondf = pandas.read_json("skittles_config.json")
-if jsondf.values.size < 2:
-    raise IndexError("JSON file doesn't have enough parameters")
-try:
-    xlsx_fname = jsondf['xlsx_fname'][0]
-except KeyError as e:
-    print("Key error: xlsx_fname")
-    exit(0)
-try:
-    team = jsondf['team'][0]
-except KeyError as e:
-    print("Key error: team")
-    exit(0)
-
-# get Excel file handler
-xlsx = XLSXhandler(xlsx_fname)
+from JSONhandler import JSONhandler
 
 def get_fixtures(xlsx_fname, team):
     """Read the skittles fixtures from Excel
@@ -47,12 +25,33 @@ def get_fixtures(xlsx_fname, team):
         print(teams_list)
         if team not in teams_list:
             raise ValueError("@get_fixtures({}, {}) - team not in list {}".format(xlsx_fname, team, teams_list))
-        # TODO get Victory Buoys fixtures
+        # get fixtures data
+        raw_data = xlsx.xlsx_data.parse(team)
+        start_row = 0
+        end_row = 41
+        fixtures = raw_data.values[start_row:end_row, 0:5]
+        for lp1 in range(start_row, end_row):
+            # TODO check the type of the dates (first column)
+            print("[{}] {}\t{}\t{}\t{}".format(fixtures[lp1][0], fixtures[lp1][1], fixtures[lp1][2], fixtures[lp1][3],
+                                               fixtures[lp1][4]))
+        return fixtures
 
 # TODO write (future) fixtures to Google calendar
+
 
 # ---------
 # Main body
 # ---------
-get_fixtures(xlsx_fname, team)
+
+# read config from a JSON
+jsonhndlr = JSONhandler("skittles_config.json")
+if jsonhndlr.read_json():
+    # read key values from config file
+    xlsx_fname = jsonhndlr.get_val('xlsx_fname')
+    team = jsonhndlr.get_val('team')
+
+# get Excel file handler
+xlsx = XLSXhandler(xlsx_fname)
+# read the fixtures
+fixtures = get_fixtures(xlsx_fname, team)
 

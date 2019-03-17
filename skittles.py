@@ -24,7 +24,6 @@ def get_fixtures(xlsx_fname, team):
         raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, team))
     if xlsx.get_xlsx_from_file():
         teams_list = xlsx.get_sheet_names()
-        print(teams_list)
         if team not in teams_list:
             raise ValueError("@get_fixtures({}, {}) - team not in list {}".format(xlsx_fname, team, teams_list))
         # get fixtures data
@@ -42,12 +41,9 @@ def get_fixtures(xlsx_fname, team):
                 fixtures[lp1][0] = datetime.datetime.strptime(fixtures[lp1][0], '%d/%m/%Y').date()
         return fixtures
 
-# TODO write (future) fixtures to Google calendar: handler class
-
-
-# ---------
-# Main body
-# ---------
+# --------- #
+# Main body #
+# --------- #
 
 # read config from a JSON
 jsonhndlr = JSONhandler("skittles_config.json")
@@ -70,5 +66,6 @@ for row in fixtures:
         #competition = row[3]
         venue = row[4]
         # TODO write to calendar
+        calhndlr = GoogleCalAPIHandler()
 pass
 

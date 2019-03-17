@@ -1,6 +1,7 @@
-import pandas
+#import pandas
 from XLSXhandler import XLSXhandler
 from JSONhandler import JSONhandler
+import datetime
 
 def get_fixtures(xlsx_fname, team):
     """Read the skittles fixtures from Excel
@@ -31,12 +32,16 @@ def get_fixtures(xlsx_fname, team):
         end_row = 41
         fixtures = raw_data.values[start_row:end_row, 0:5]
         for lp1 in range(start_row, end_row):
-            # TODO check the type of the dates (first column)
-            print("[{}] {}\t{}\t{}\t{}".format(fixtures[lp1][0], fixtures[lp1][1], fixtures[lp1][2], fixtures[lp1][3],
-                                               fixtures[lp1][4]))
+            # convert date field to date objects
+            if isinstance(fixtures[lp1][0], datetime.datetime):
+                fixtures[lp1][0] = fixtures[lp1][0].date()
+            if isinstance(fixtures[lp1][0], str):
+                # assumes the format of the date, if it's a string
+                # TODO parse date format in string and handle the different ones
+                fixtures[lp1][0] = datetime.datetime.strptime(fixtures[lp1][0], '%d/%m/%Y').date()
         return fixtures
 
-# TODO write (future) fixtures to Google calendar
+# TODO write (future) fixtures to Google calendar: handler class
 
 
 # ---------
@@ -54,4 +59,6 @@ if jsonhndlr.read_json():
 xlsx = XLSXhandler(xlsx_fname)
 # read the fixtures
 fixtures = get_fixtures(xlsx_fname, team)
+today = datetime.date.today()
+print(today)
 

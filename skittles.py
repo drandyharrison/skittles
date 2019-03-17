@@ -1,6 +1,7 @@
 #import pandas
 from XLSXhandler import XLSXhandler
 from JSONhandler import JSONhandler
+from GoogleCalAPIHandler import GoogleCalAPIHandler
 import datetime
 
 def get_fixtures(xlsx_fname, team):
@@ -59,6 +60,15 @@ if jsonhndlr.read_json():
 xlsx = XLSXhandler(xlsx_fname)
 # read the fixtures
 fixtures = get_fixtures(xlsx_fname, team)
-today = datetime.date.today()
-print(today)
+for row in fixtures:
+    # discard games in the past
+    date_of_game = row[0]
+    if date_of_game > datetime.date.today():
+        home_team = row[1]
+        home_game = (home_team == "VICTORY BOYS")
+        away_team = row[2]
+        #competition = row[3]
+        venue = row[4]
+        # TODO write to calendar
+pass
 

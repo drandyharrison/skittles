@@ -52,6 +52,8 @@ if jsonhndlr.read_json():
     xlsx_fname = jsonhndlr.get_val('xlsx_fname')
     team = jsonhndlr.get_val('team')
 
+# create Google calendar API handler
+calhndlr = GoogleCalAPIHandler()
 # get Excel file handler
 xlsx = XLSXhandler(xlsx_fname)
 # read the fixtures
@@ -66,6 +68,5 @@ for row in fixtures:
         #competition = row[3]
         venue = row[4]
         # TODO write to calendar
-        calhndlr = GoogleCalAPIHandler()
 pass
 

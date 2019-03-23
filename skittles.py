@@ -4,30 +4,35 @@ from JSONhandler import JSONhandler
 from GoogleCalAPIHandler import GoogleCalAPIHandler
 import datetime
 
-def get_fixtures(xlsx_fname, team):
+
+# if we define argument type, not-defined when pass argument of different type - so still need to do validation
+# prefix arguments with a_ to distinguish them from globals with same name
+def get_fixtures(a_xlsx_fname:str, a_team:str):
     """Read the skittles fixtures from Excel
     * xlsx_fname - name of the Excel file containing the fixture information
     * team - the team whose fixtures are to be read (= worksheet name)"""
-    if isinstance(xlsx_fname, str):
+    if isinstance(a_xlsx_fname, str):
         # check whether string is empty or blank
-        if not (xlsx_fname and xlsx_fname.strip()):
-            raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(xlsx_fname, team, xlsx_fname))
-        elif not xlsx_fname.endswith(".xlsx"):
-            raise ValueError("@get_fixtures({}, {}) - {} has wrong suffix".format(xlsx_fname, team, xlsx_fname))
+        if not (a_xlsx_fname and a_xlsx_fname.strip()):
+            raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(a_xlsx_fname, a_team, a_xlsx_fname))
+        elif not a_xlsx_fname.endswith(".xlsx"):
+            raise ValueError("@get_fixtures({}, {}) - {} has wrong suffix".format(a_xlsx_fname, a_team, a_xlsx_fname))
     else:
-        raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, xlsx_fname))
-    if isinstance(team, str):
+        raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(a_xlsx_fname, a_team, a_xlsx_fname))
+    if isinstance(a_team, str):
         # check whether string is empty or blank
-        if not (team and team.strip()):
-            raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(xlsx_fname, team, team))
+        if not (a_team and a_team.strip()):
+            raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(a_xlsx_fname, a_team, a_team))
     else:
-        raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(xlsx_fname, team, team))
+        raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(a_xlsx_fname, team, team))
+    # get Excel file handler
+    xlsx = XLSXhandler(a_xlsx_fname)
     if xlsx.get_xlsx_from_file():
         teams_list = xlsx.get_sheet_names()
-        if team not in teams_list:
-            raise ValueError("@get_fixtures({}, {}) - team not in list {}".format(xlsx_fname, team, teams_list))
+        if a_team not in teams_list:
+            raise ValueError("@get_fixtures({}, {}) - team not in list {}".format(a_xlsx_fname, a_team, teams_list))
         # get fixtures data
-        raw_data = xlsx.xlsx_data.parse(team)
+        raw_data = xlsx.xlsx_data.parse(a_team)
         start_row = 0
         end_row = 41
         fixtures = raw_data.values[start_row:end_row, 0:5]
@@ -55,8 +60,6 @@ if jsonhndlr.read_json():
 # create Google calendar API handler
 calhndlr = GoogleCalAPIHandler()
 calhndlr.get_next_n_appts(10)
-# get Excel file handler
-xlsx = XLSXhandler(xlsx_fname)
 # read the fixtures
 fixtures = get_fixtures(xlsx_fname, team)
 for row in fixtures:

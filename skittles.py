@@ -1,4 +1,3 @@
-#import pandas
 from XLSXhandler import XLSXhandler
 from JSONhandler import JSONhandler
 from GoogleCalAPIHandler import GoogleCalAPIHandler
@@ -42,7 +41,7 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
                 fixtures[lp1][0] = fixtures[lp1][0].date()
             if isinstance(fixtures[lp1][0], str):
                 # assumes the format of the date, if it's a string
-                # TODO parse date format in string and handle the different ones
+                # parse date format in string and handle the different ones
                 fixtures[lp1][0] = datetime.datetime.strptime(fixtures[lp1][0], '%d/%m/%Y').date()
         return fixtures
 
@@ -56,10 +55,12 @@ if jsonhndlr.read_json():
     # read key values from config file
     xlsx_fname = jsonhndlr.get_val('xlsx_fname')
     team = jsonhndlr.get_val('team')
+    # to handle where team name (for worksheet tab) is spelt different to home team in fixtures
+    team2 = jsonhndlr.get_val('home_team')
 
 # create Google calendar API handler
 calhndlr = GoogleCalAPIHandler()
-calhndlr.get_next_n_appts(10)
+#calhndlr.get_next_n_appts(10)
 # read the fixtures
 fixtures = get_fixtures(xlsx_fname, team)
 for row in fixtures:
@@ -67,10 +68,11 @@ for row in fixtures:
     date_of_game = row[0]
     if date_of_game > datetime.date.today():
         home_team = row[1]
-        home_game = (home_team == "VICTORY BOYS")
+        home_game = (home_team == team2)
         away_team = row[2]
         #competition = row[3]
         venue = row[4]
         # TODO write to calendar
+        print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
 pass
 

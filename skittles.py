@@ -54,6 +54,7 @@ if jsonhndlr.read_json():
 
 # create Google calendar API handler
 calhndlr = GoogleCalAPIHandler()
+calhndlr.get_next_n_appts(10)
 # get Excel file handler
 xlsx = XLSXhandler(xlsx_fname)
 # read the fixtures

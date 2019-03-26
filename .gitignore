@@ -12,3 +12,7 @@ htmlcov/
 credentials\.json
 
 token\.pickle
+
+tzdata/
+
+zone1970\.tab

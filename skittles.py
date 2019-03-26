@@ -90,6 +90,7 @@ event = {
   },
 }
 
+valid = calhndlr.is_tz_valid(event['start']['timeZone'])
 # TODO check the timezones are valid
 
 calhndlr.add_event("iam.andyharrison@gmail.com", event)

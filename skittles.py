@@ -74,5 +74,23 @@ for row in fixtures:
         venue = row[4]
         # TODO write to calendar
         print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
-pass
+
+# test adding an event
+event = {
+  'summary': 'Skittles test',
+  'location': 'Venue',
+  'description': 'Home/Away (Opposition)',
+  'start': {
+    'dateTime': '2019-03-28T20:00:00',
+    'timeZone': 'Europe/London',
+  },
+  'end': {
+    'dateTime': '2019-03-28T23:00:00',
+    'timeZone': 'Europe/London',
+  },
+}
+
+# TODO check the timezones are valid
+
+calhndlr.add_event("iam.andyharrison@gmail.com", event)
 

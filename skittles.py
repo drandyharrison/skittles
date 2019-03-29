@@ -2,6 +2,7 @@ from XLSXhandler import XLSXhandler
 from JSONhandler import JSONhandler
 from GoogleCalAPIHandler import GoogleCalAPIHandler
 import datetime
+import math
 
 
 # if we define argument type, not-defined when pass argument of different type - so still need to do validation
@@ -61,6 +62,20 @@ if jsonhndlr.read_json():
 # create Google calendar API handler
 calhndlr = GoogleCalAPIHandler()
 #calhndlr.get_next_n_appts(10)
+# event template
+event = {
+    'summary': 'Skittles',
+    'location': 'Venue',
+    'description': '',
+    'start': {
+        'dateTime': '2019-03-28T20:00:00',
+        'timeZone': 'Europe/London',
+    },
+    'end': {
+        'dateTime': '2019-03-28T23:00:00',
+        'timeZone': 'Europe/London',
+    },
+}
 # read the fixtures
 fixtures = get_fixtures(xlsx_fname, team)
 for row in fixtures:
@@ -70,28 +85,26 @@ for row in fixtures:
         home_team = row[1]
         home_game = (home_team == team2)
         away_team = row[2]
-        #competition = row[3]
+        competition = row[3]
         venue = row[4]
-        # TODO write to calendar
-        print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
+        # Add game to calendar?
+        if isinstance(venue, str):
+            add = not(venue in ["BYE"])
+        elif isinstance(venue, float):
+            add = not math.isnan(venue)
+        if add:
+            # TODO create event based on data
+            suffix = (away_team if home_game else home_team)
+            event['summary'] = "Skittles (" + suffix + ")"
+            event["location"] = venue
+            event["start"]["dateTIme"] = str(date_of_game) + "T20:00:00"
+            event["end"]["dateTIme"] = str(date_of_game) + "T23:00:00"
+            # TODO write to calendar
+            print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
 
 # test adding an event
-event = {
-  'summary': 'Skittles test',
-  'location': 'Venue',
-  'description': 'Home/Away (Opposition)',
-  'start': {
-    'dateTime': '2019-03-28T20:00:00',
-    'timeZone': 'Europe/London',
-  },
-  'end': {
-    'dateTime': '2019-03-28T23:00:00',
-    'timeZone': 'Europe/London',
-  },
-}
 
-valid = calhndlr.is_tz_valid(event['start']['timeZone'])
-# TODO check the timezones are valid
 
-calhndlr.add_event("iam.andyharrison@gmail.com", event)
+#valid = calhndlr.is_tz_valid(event['start']['timeZone'])
+#calhndlr.add_event("iam.andyharrison@gmail.com", event)
 

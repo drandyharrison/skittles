@@ -61,7 +61,6 @@ if jsonhndlr.read_json():
 
 # create Google calendar API handler
 calhndlr = GoogleCalAPIHandler()
-#calhndlr.get_next_n_appts(10)
 # event template
 event = {
     'summary': 'Skittles',
@@ -93,18 +92,13 @@ for row in fixtures:
         elif isinstance(venue, float):
             add = not math.isnan(venue)
         if add:
-            # TODO create event based on data
+            # create event based on data
             suffix = (away_team if home_game else home_team)
             event['summary'] = "Skittles (" + suffix + ")"
             event["location"] = venue
-            event["start"]["dateTIme"] = str(date_of_game) + "T20:00:00"
-            event["end"]["dateTIme"] = str(date_of_game) + "T23:00:00"
-            # TODO write to calendar
+            event["start"]["dateTime"] = str(date_of_game) + "T20:30:00"
+            event["end"]["dateTime"] = str(date_of_game) + "T23:30:00"
+            # write to calendar
+            calhndlr.add_event("iam.andyharrison@gmail.com", event)
             print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
-
-# test adding an event
-
-
-#valid = calhndlr.is_tz_valid(event['start']['timeZone'])
-#calhndlr.add_event("iam.andyharrison@gmail.com", event)
 

@@ -4,7 +4,6 @@ from GoogleCalAPIHandler import GoogleCalAPIHandler
 import datetime
 import math
 
-
 # if we define argument type, not-defined when pass argument of different type - so still need to do validation
 # prefix arguments with a_ to distinguish them from globals with same name
 def get_fixtures(a_xlsx_fname:str, a_team:str):
@@ -58,6 +57,7 @@ if jsonhndlr.read_json():
     team = jsonhndlr.get_val('team')
     # to handle where team name (for worksheet tab) is spelt different to home team in fixtures
     team2 = jsonhndlr.get_val('home_team')
+    calendar = jsonhndlr.get_val('calendar')
 
 # create Google calendar API handler
 calhndlr = GoogleCalAPIHandler()
@@ -92,13 +92,13 @@ for row in fixtures:
         elif isinstance(venue, float):
             add = not math.isnan(venue)
         if add:
-            # create event based on data
+            # create event based on fixture data
             suffix = (away_team if home_game else home_team)
             event['summary'] = "Skittles (" + suffix + ")"
             event["location"] = venue
             event["start"]["dateTime"] = str(date_of_game) + "T20:30:00"
             event["end"]["dateTime"] = str(date_of_game) + "T23:30:00"
             # write to calendar
-            calhndlr.add_event("iam.andyharrison@gmail.com", event)
+            calhndlr.add_event(calendar, event)
             print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
 

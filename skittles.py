@@ -8,8 +8,11 @@ import math
 # prefix arguments with a_ to distinguish them from globals with same name
 def get_fixtures(a_xlsx_fname:str, a_team:str):
     """Read the skittles fixtures from Excel
-    * xlsx_fname - name of the Excel file containing the fixture information
-    * team - the team whose fixtures are to be read (= worksheet name)"""
+    :param xlsx_fname: name of the Excel file containing the fixture information
+    :param team: the team whose fixtures are to be read (= worksheet name)
+    :raises ValueError: when a parameter has an invalid value
+    :returns: list of fixtures
+    """
     if isinstance(a_xlsx_fname, str):
         # check whether string is empty or blank
         if not (a_xlsx_fname and a_xlsx_fname.strip()):

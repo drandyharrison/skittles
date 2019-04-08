@@ -4,17 +4,15 @@ from GoogleCalAPIHandler import GoogleCalAPIHandler
 import datetime
 import math
 
-# if we define argument type, not-defined when pass argument of different type - so still need to do validation
-# prefix arguments with a_ to distinguish them from globals with same name
-def get_fixtures(a_xlsx_fname:str, a_team:str):
-    """Read the skittles fixtures from Excel
+def are_get_fixtures_params_valid(a_xlsx_fname:str, a_team:str):
+    """Check params for get_fxitures are all valid
     :param xlsx_fname: str
         name of the Excel file containing the fixture information
     :param team: str
         the team whose fixtures are to be read (= worksheet name)
     :raises ValueError: when a parameter has an invalid value
-    :return: ndarray
-        list of fixtures
+    :return: bool
+        are parameters valid
     """
     if isinstance(a_xlsx_fname, str):
         # check whether string is empty or blank
@@ -30,26 +28,43 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
             raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(a_xlsx_fname, a_team, a_team))
     else:
         raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(a_xlsx_fname, team, team))
-    # get Excel file handler
-    xlsx = XLSXhandler(a_xlsx_fname)
-    if xlsx.get_xlsx_from_file():
-        teams_list = xlsx.get_sheet_names()
-        if a_team not in teams_list:
-            raise ValueError("@get_fixtures({}, {}) - team not in list {}".format(a_xlsx_fname, a_team, teams_list))
-        # get fixtures data
-        raw_data = xlsx.xlsx_data.parse(a_team)
-        start_row = 0
-        end_row = 41
-        fixtures = raw_data.values[start_row:end_row, 0:5]
-        for lp1 in range(start_row, end_row):
-            # convert date field to date objects
-            if isinstance(fixtures[lp1][0], datetime.datetime):
-                fixtures[lp1][0] = fixtures[lp1][0].date()
-            if isinstance(fixtures[lp1][0], str):
-                # assumes the format of the date, if it's a string
-                # parse date format in string and handle the different ones
-                fixtures[lp1][0] = datetime.datetime.strptime(fixtures[lp1][0], '%d/%m/%Y').date()
-        return fixtures
+    return True
+
+# if we define argument type, not-defined when pass argument of different type - so still need to do validation
+# prefix arguments with a_ to distinguish them from globals with same name
+def get_fixtures(a_xlsx_fname:str, a_team:str):
+    """Read the skittles fixtures from Excel
+    :param xlsx_fname: str
+        name of the Excel file containing the fixture information
+    :param team: str
+        the team whose fixtures are to be read (= worksheet name)
+    :raises ValueError: when a parameter has an invalid value
+    :return: ndarray
+        list of fixtures
+    """
+    if are_get_fixtures_params_valid(a_xlsx_fname, a_team):
+        # get Excel file handler
+        xlsx = XLSXhandler(a_xlsx_fname)
+        if xlsx.get_xlsx_from_file():
+            teams_list = xlsx.get_sheet_names()
+            if a_team not in teams_list:
+                raise ValueError("@get_fixtures({}, {}) - team not in list {}".format(a_xlsx_fname, a_team, teams_list))
+            # get fixtures data
+            raw_data = xlsx.xlsx_data.parse(a_team)
+            start_row = 0
+            end_row = 41
+            fixtures = raw_data.values[start_row:end_row, 0:5]
+            for lp1 in range(start_row, end_row):
+                # convert date field to date objects
+                if isinstance(fixtures[lp1][0], datetime.datetime):
+                    fixtures[lp1][0] = fixtures[lp1][0].date()
+                if isinstance(fixtures[lp1][0], str):
+                    # assumes the format of the date, if it's a string
+                    # parse date format in string and handle the different ones
+                    fixtures[lp1][0] = datetime.datetime.strptime(fixtures[lp1][0], '%d/%m/%Y').date()
+            return fixtures
+    else:
+        return None
 
 # --------- #
 # Main body #

@@ -1,6 +1,6 @@
-from XLSXhandler import XLSXhandler
-from JSONhandler import JSONhandler
-from GoogleCalAPIHandler import GoogleCalAPIHandler
+import XLSXhandler
+import JSONhandler
+import GoogleCalAPIHandler
 import datetime
 import math
 
@@ -44,7 +44,7 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
     """
     if are_get_fixtures_params_valid(a_xlsx_fname, a_team):
         # get Excel file handler
-        xlsx = XLSXhandler(a_xlsx_fname)
+        xlsx = XLSXhandler.XLSXhandler(a_xlsx_fname)
         if xlsx.get_xlsx_from_file():
             teams_list = xlsx.get_sheet_names()
             if a_team not in teams_list:
@@ -71,7 +71,7 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
 # --------- #
 
 # read config from a JSON
-jsonhndlr = JSONhandler("skittles_config.json")
+jsonhndlr = JSONhandler.JSONhandler("skittles_config.json")
 if jsonhndlr.read_json():
     # read key values from config file
     xlsx_fname = jsonhndlr.get_val('xlsx_fname')
@@ -81,7 +81,7 @@ if jsonhndlr.read_json():
     calendar = jsonhndlr.get_val('calendar')
 
 # create Google calendar API handler
-calhndlr = GoogleCalAPIHandler()
+calhndlr = GoogleCalAPIHandler.GoogleCalAPIHandler()
 # event template
 event = {
     'summary': 'Skittles',

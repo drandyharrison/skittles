@@ -27,7 +27,7 @@ def are_get_fixtures_params_valid(a_xlsx_fname:str, a_team:str):
         if not (a_team and a_team.strip()):
             raise ValueError("@get_fixtures({}, {}) - {} is blank or empty".format(a_xlsx_fname, a_team, a_team))
     else:
-        raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(a_xlsx_fname, team, team))
+        raise ValueError("@get_fixtures({}, {}) - {} is not a string".format(a_xlsx_fname, a_team, a_team))
     return True
 
 # if we define argument type, not-defined when pass argument of different type - so still need to do validation
@@ -66,60 +66,63 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
     else:
         return None
 
-# --------- #
-# Main body #
-# --------- #
+# ------------- #
+# Main function #
+# ------------- #
 
-# read config from a JSON
-jsonhndlr = JSONhandler.JSONhandler("skittles_config.json")
-if jsonhndlr.read_json():
-    # read key values from config file
-    xlsx_fname = jsonhndlr.get_val('xlsx_fname')
-    team = jsonhndlr.get_val('team')
-    # to handle where team name (for worksheet tab) is spelt different to home team in fixtures
-    team2 = jsonhndlr.get_val('home_team')
-    calendar = jsonhndlr.get_val('calendar')
+def main():
+    # read config from a JSON
+    jsonhndlr = JSONhandler.JSONhandler("skittles_config.json")
+    if jsonhndlr.read_json():
+        # read key values from config file
+        xlsx_fname = jsonhndlr.get_val('xlsx_fname')
+        team = jsonhndlr.get_val('team')
+        # to handle where team name (for worksheet tab) is spelt different to home team in fixtures
+        team2 = jsonhndlr.get_val('home_team')
+        calendar = jsonhndlr.get_val('calendar')
 
-# create Google calendar API handler
-calhndlr = GoogleCalAPIHandler.GoogleCalAPIHandler()
-# event template
-event = {
-    'summary': 'Skittles',
-    'location': 'Venue',
-    'description': '',
-    'start': {
-        'dateTime': '2019-03-28T20:00:00',
-        'timeZone': 'Europe/London',
-    },
-    'end': {
-        'dateTime': '2019-03-28T23:00:00',
-        'timeZone': 'Europe/London',
-    },
-}
-# read the fixtures
-fixtures = get_fixtures(xlsx_fname, team)
-for row in fixtures:
-    # discard games in the past
-    date_of_game = row[0]
-    if date_of_game > datetime.date.today():
-        home_team = row[1]
-        home_game = (home_team == team2)
-        away_team = row[2]
-        competition = row[3]
-        venue = row[4]
-        # Add game to calendar?
-        if isinstance(venue, str):
-            add = not(venue in ["BYE"])
-        elif isinstance(venue, float):
-            add = not math.isnan(venue)
-        if add:
-            # create event based on fixture data
-            suffix = (away_team if home_game else home_team)
-            event['summary'] = "Skittles (" + suffix + ")"
-            event["location"] = venue
-            event["start"]["dateTime"] = str(date_of_game) + "T20:30:00"
-            event["end"]["dateTime"] = str(date_of_game) + "T23:30:00"
-            # write to calendar
-            calhndlr.add_event(calendar, event)
-            print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
+    # create Google calendar API handler
+    calhndlr = GoogleCalAPIHandler.GoogleCalAPIHandler()
+    # event template
+    event = {
+        'summary': 'Skittles',
+        'location': 'Venue',
+        'description': '',
+        'start': {
+            'dateTime': '2019-03-28T20:00:00',
+            'timeZone': 'Europe/London',
+        },
+        'end': {
+            'dateTime': '2019-03-28T23:00:00',
+            'timeZone': 'Europe/London',
+        },
+    }
+    # read the fixtures
+    fixtures = get_fixtures(xlsx_fname, team)
+    for row in fixtures:
+        # discard games in the past
+        date_of_game = row[0]
+        if date_of_game > datetime.date.today():
+            home_team = row[1]
+            home_game = (home_team == team2)
+            away_team = row[2]
+            competition = row[3]
+            venue = row[4]
+            # Add game to calendar?
+            if isinstance(venue, str):
+                add = not(venue in ["BYE"])
+            elif isinstance(venue, float):
+                add = not math.isnan(venue)
+            if add:
+                # create event based on fixture data
+                suffix = (away_team if home_game else home_team)
+                event['summary'] = "Skittles (" + suffix + ")"
+                event["location"] = venue
+                event["start"]["dateTime"] = str(date_of_game) + "T20:30:00"
+                event["end"]["dateTime"] = str(date_of_game) + "T23:30:00"
+                # write to calendar
+                calhndlr.add_event(calendar, event)
+                print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
 
+if __name__ == "__main__":
+    main()

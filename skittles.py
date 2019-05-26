@@ -1,6 +1,4 @@
-import XLSXhandler
-import JSONhandler
-import GoogleCalAPIHandler
+import ash_utils
 import datetime
 import math
 
@@ -44,7 +42,7 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
     """
     if are_get_fixtures_params_valid(a_xlsx_fname, a_team):
         # get Excel file handler
-        xlsx = XLSXhandler.XLSXhandler(a_xlsx_fname)
+        xlsx = ash_utils.XLSXhandler(a_xlsx_fname)
         if xlsx.get_xlsx_from_file():
             teams_list = xlsx.get_sheet_names()
             if a_team not in teams_list:
@@ -72,7 +70,7 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
 
 def main():
     # read config from a JSON
-    jsonhndlr = JSONhandler.JSONhandler("skittles_config.json")
+    jsonhndlr = ash_utils.JSONhandler("skittles_config.json")
     if jsonhndlr.read_json():
         # read key values from config file
         xlsx_fname = jsonhndlr.get_val('xlsx_fname')
@@ -82,7 +80,7 @@ def main():
         calendar = jsonhndlr.get_val('calendar')
 
     # create Google calendar API handler
-    calhndlr = GoogleCalAPIHandler.GoogleCalAPIHandler()
+    calhndlr = ash_utils.GoogleCalAPIHandler()
     # event template
     event = {
         'summary': 'Skittles',

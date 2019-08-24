@@ -1,6 +1,7 @@
 import ash_utils
 import datetime
 import math
+import pandas
 
 def are_get_fixtures_params_valid(a_xlsx_fname:str, a_team:str):
     """Check params for get_fxitures are all valid
@@ -48,18 +49,24 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
             if a_team not in teams_list:
                 raise ValueError("@get_fixtures({}, {}) - team not in list {}".format(a_xlsx_fname, a_team, teams_list))
             # get fixtures data
-            raw_data = xlsx.xlsx_data.parse(a_team)
+            hdr_row = 2
             start_row = 0
-            end_row = 41
-            fixtures = raw_data.values[start_row:end_row, 0:5]
+            end_row = 40
+            xlsx.extract_worksheet_data(a_team, hdr_row, -1, 1+hdr_row+start_row, 1+hdr_row+end_row, 5)
+            raw_fixtures = xlsx.get_extracted_as_pandas()
+            # create the date index
+            date_index = []
             for lp1 in range(start_row, end_row):
                 # convert date field to date objects
-                if isinstance(fixtures[lp1][0], datetime.datetime):
-                    fixtures[lp1][0] = fixtures[lp1][0].date()
-                if isinstance(fixtures[lp1][0], str):
-                    # assumes the format of the date, if it's a string
-                    # parse date format in string and handle the different ones
-                    fixtures[lp1][0] = datetime.datetime.strptime(fixtures[lp1][0], '%d/%m/%Y').date()
+                if isinstance(raw_fixtures.iloc[lp1][0], datetime.datetime):
+                    date_index.append(raw_fixtures.iloc[lp1][0].date())
+                if isinstance(raw_fixtures.iloc[lp1][0], str):
+                    date_index.append(datetime.datetime.strptime(raw_fixtures.iloc[lp1][0], '%d/%m/%Y').date())
+            # create fixtures with date index and oopy in fixture data
+            fixtures = pandas.DataFrame(index=date_index, columns=raw_fixtures.columns[1:len(raw_fixtures.columns)], dtype=str)
+            for i in range(0, len(raw_fixtures.index)):
+                for j in range(1, len(raw_fixtures.columns)):
+                    fixtures.iloc[i, j-1] = raw_fixtures.iloc[i, j]
             return fixtures
     else:
         return None
@@ -71,6 +78,7 @@ def get_fixtures(a_xlsx_fname:str, a_team:str):
 def main():
     # read config from a JSON
     jsonhndlr = ash_utils.JSONhandler("skittles_config.json")
+    # TODO catch errors when using handlers
     if jsonhndlr.read_json():
         # read key values from config file
         xlsx_fname = jsonhndlr.get_val('xlsx_fname')
@@ -97,18 +105,18 @@ def main():
     }
     # read the fixtures
     fixtures = get_fixtures(xlsx_fname, team)
-    for row in fixtures:
+    for index, row in fixtures.iterrows():
         # discard games in the past
-        date_of_game = row[0]
+        date_of_game = index
         if date_of_game > datetime.date.today():
-            home_team = row[1]
+            home_team = row['Home Team']
             home_game = (home_team == team2)
-            away_team = row[2]
-            competition = row[3]
-            venue = row[4]
+            away_team = row['Away Team']
+            competition = row['Competition']
+            venue = row['Venue']
             # Add game to calendar?
             if isinstance(venue, str):
-                add = not(venue in ["BYE"])
+                add = not(venue in ["BYE"]) and not(competition in ['no match', 'tba'])
             elif isinstance(venue, float):
                 add = not math.isnan(venue)
             if add:
@@ -119,8 +127,8 @@ def main():
                 event["start"]["dateTime"] = str(date_of_game) + "T20:30:00"
                 event["end"]["dateTime"] = str(date_of_game) + "T23:30:00"
                 # write to calendar
-                calhndlr.add_event(calendar, event)
-                print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
+                if calhndlr.add_event(calendar, event):
+                    print("[{}] {} vs {} @ {}".format(date_of_game, home_team, away_team, venue))
 
 if __name__ == "__main__":
     main()
